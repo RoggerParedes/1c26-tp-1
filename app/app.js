@@ -1,4 +1,5 @@
 import express from "express";
+import os from "node:os";
 
 import {
   init as exchangeInit,
@@ -90,6 +91,19 @@ app.post("/exchange", async (req, res) => {
   } else {
     res.status(500).json(exchangeResult);
   }
+});
+
+app.get("/who", (req, res) => {
+  const payload = {
+    hostname: os.hostname(),
+    pid: process.pid,
+    ts: new Date().toISOString(),
+  };
+
+  res
+    .status(200)
+    .type("application/json")
+    .send(`${JSON.stringify(payload)}\n`);
 });
 
 app.listen(port, () => {
