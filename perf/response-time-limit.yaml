@@ -10,20 +10,28 @@ config:
           port: 8125
           prefix: "artillery-api"
 
-  pool: 20
+  pool: 50
 
   phases:
-    - name: Warm up small requests
+    - name: Warm up
       duration: 20
       arrivalRate: 1
 
-    - name: Mixed payloads
+    - name: Normal load - 15 rps
       duration: 30
-      arrivalRate: 5
+      arrivalRate: 15
 
-    - name: Large payload pressure
+    - name: Medium load - 30 rps
       duration: 30
-      arrivalRate: 10
+      arrivalRate: 30
+
+    - name: Higher load - 50 rps
+      duration: 30
+      arrivalRate: 50
+
+    - name: Higher load - 100 rps
+      duration: 30
+      arrivalRate: 100
 
   defaults:
     headers:
@@ -33,7 +41,6 @@ config:
 
 scenarios:
   - name: Exchange small request
-    weight: 1
     flow:
       - function: "smallRequest"
       - post:
@@ -44,18 +51,3 @@ scenarios:
             baseAccountId: "{{ baseAccountId }}"
             counterAccountId: "{{ counterAccountId }}"
             baseAmount: "{{ baseAmount }}"
-            extra: "{{ extraPayload }}"
-
-  - name: Exchange large request
-    weight: 1
-    flow:
-      - function: "largeRequest"
-      - post:
-          url: "/exchange"
-          json:
-            baseCurrency: "{{ baseCurrency }}"
-            counterCurrency: "{{ counterCurrency }}"
-            baseAccountId: "{{ baseAccountId }}"
-            counterAccountId: "{{ counterAccountId }}"
-            baseAmount: "{{ baseAmount }}"
-            extra: "{{ extraPayload }}"
