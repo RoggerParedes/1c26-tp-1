@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 
 import * as repo from "./repositories/stateRepository.js";
+import { recordSuccessfulExchangeMetrics } from "./metrics/businessMetrics.js";
 
 export async function init() {
   await repo.init();
@@ -59,6 +60,12 @@ export async function exchange(exchangeRequest) {
         await repo.updateAccountBalanceDelta(counterAccount.id, -counterAmount);
         exchangeResult.ok = true;
         exchangeResult.counterAmount = counterAmount;
+        recordSuccessfulExchangeMetrics({
+          baseCurrency,
+          counterCurrency,
+          baseAmount,
+          counterAmount,
+        });
       } else {
         await transfer(baseAccount.id, clientBaseAccountId, baseAmount);
         exchangeResult.obs = "Could not transfer to clients' account";
