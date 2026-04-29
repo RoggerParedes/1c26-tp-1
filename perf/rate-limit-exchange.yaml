@@ -1,0 +1,64 @@
+config:
+  target: "http://localhost:5555"
+
+  environments:
+    api:
+      target: "http://localhost:5555"
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  pool: 50
+
+  http:
+    timeout: 2000
+
+  phases:
+    - name: Warm up
+      duration: 20
+      arrivalRate: 1
+
+    - name: Below limit - 5 rps
+      duration: 30
+      arrivalRate: 5
+
+    - name: Around limit - 10 rps
+      duration: 30
+      arrivalRate: 10
+
+    - name: Over limit - 20 rps
+      duration: 30
+      arrivalRate: 20
+
+    - name: Stress over limit - 40 rps
+      duration: 30
+      arrivalRate: 40
+
+    - name: Step 80 rps
+      duration: 30
+      arrivalRate: 80
+
+    - name: Step 120 rps
+      duration: 30
+      arrivalRate: 120
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+  processor: "./processor.js"
+
+scenarios:
+  - name: Exchange small request
+    flow:
+      - function: "smallRequest"
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "{{ baseCurrency }}"
+            counterCurrency: "{{ counterCurrency }}"
+            baseAccountId: "{{ baseAccountId }}"
+            counterAccountId: "{{ counterAccountId }}"
+            baseAmount: "{{ baseAmount }}"
