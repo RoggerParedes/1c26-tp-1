@@ -1,0 +1,224 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Graphite",
+      "fill": 2,
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "legend": { "show": true, "rightSide": true, "values": true, "current": true, "avg": true, "max": true },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "stack": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(keepLastValue(stats.gauges.exchange.business.volume.*, 60), 5)"
+        }
+      ],
+      "title": "Volumen por moneda",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [
+        { "format": "short", "label": "Monto acumulado", "logBase": 1, "min": "0", "show": true },
+        { "format": "short", "logBase": 1, "show": true }
+      ]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "id": 2,
+      "legend": { "show": true, "rightSide": true, "values": true, "current": true, "avg": true, "max": true },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "stack": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "aliasByNode(keepLastValue(stats.gauges.exchange.business.net.*, 60), 5)"
+        }
+      ],
+      "title": "Neto por moneda",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [
+        { "format": "short", "label": "Monto acumulado con signo", "logBase": 1, "show": true },
+        { "format": "short", "logBase": 1, "show": true }
+      ]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 16 },
+      "id": 3,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.volume.ars, 60)" }],
+      "title": "Volumen ARS",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "min": "0", "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 },
+      "id": 4,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.volume.usd, 60)" }],
+      "title": "Volumen USD",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "min": "0", "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 },
+      "id": 5,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.volume.eur, 60)" }],
+      "title": "Volumen EUR",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "min": "0", "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 22 },
+      "id": 6,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.volume.brl, 60)" }],
+      "title": "Volumen BRL",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "min": "0", "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 28 },
+      "id": 7,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.net.ars, 60)" }],
+      "title": "Neto ARS",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 28 },
+      "id": 8,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.net.usd, 60)" }],
+      "title": "Neto USD",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 34 },
+      "id": 9,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.net.eur, 60)" }],
+      "title": "Neto EUR",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    },
+    {
+      "datasource": "Graphite",
+      "fill": 1,
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 34 },
+      "id": 10,
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "targets": [{ "refId": "A", "target": "keepLastValue(stats.gauges.exchange.business.net.brl, 60)" }],
+      "title": "Neto BRL",
+      "type": "graph",
+      "xaxis": { "mode": "time", "show": true },
+      "yaxes": [{ "format": "short", "logBase": 1, "show": true }, { "format": "short", "logBase": 1, "show": true }]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 26,
+  "style": "dark",
+  "templating": { "list": [] },
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+    "time_options": ["5m", "15m", "30m", "1h", "6h", "12h", "24h"]
+  },
+  "timezone": "",
+  "title": "Dashboard Negocio - Volumen y Neto",
+  "uid": "business-net-vol",
+  "version": 2
+}
