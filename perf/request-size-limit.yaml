@@ -1,6 +1,4 @@
 config:
-  target: "http://localhost:5555"
-
   environments:
     api:
       target: "http://localhost:5555"
@@ -10,30 +8,25 @@ config:
           port: 8125
           prefix: "artillery-api"
 
-  pool: 20
+  processor: "./processor.js"
 
   phases:
-    - name: Warm up small requests
-      duration: 20
+    - name: Warm up
+      duration: 60
       arrivalRate: 1
 
-    - name: Mixed payloads
-      duration: 30
+    - name: Small requests ramp
+      duration: 120
+      arrivalRate: 2
+      rampTo: 5
+
+    - name: Mixed load
+      duration: 180
       arrivalRate: 5
-
-    - name: Large payload pressure
-      duration: 30
-      arrivalRate: 10
-
-  defaults:
-    headers:
-      Content-Type: "application/json"
-
-  processor: "./processor.js"
 
 scenarios:
   - name: Exchange small request
-    weight: 1
+    weight: 3 # ⬅ predominan requests chicas
     flow:
       - function: "smallRequest"
       - post:
@@ -44,10 +37,10 @@ scenarios:
             baseAccountId: "{{ baseAccountId }}"
             counterAccountId: "{{ counterAccountId }}"
             baseAmount: "{{ baseAmount }}"
-            extra: "{{ extraPayload }}"
+            extraPayload: "{{ extraPayload }}"
 
   - name: Exchange large request
-    weight: 1
+    weight: 1 # ⬅ menos frecuencia
     flow:
       - function: "largeRequest"
       - post:
