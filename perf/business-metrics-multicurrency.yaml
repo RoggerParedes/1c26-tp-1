@@ -1,0 +1,73 @@
+config:
+  environments:
+    api:
+      target: 'http://localhost:5555'
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  pool: 20
+
+  phases:
+    - name: Business load
+      duration: 120
+      arrivalRate: 2
+
+scenarios:
+  - name: Exchange ARS -> USD
+    weight: 3
+    flow:
+      - post:
+          url: '/exchange'
+          headers:
+            Content-Type: 'application/json'
+          json:
+            baseCurrency: 'ARS'
+            counterCurrency: 'USD'
+            baseAccountId: 1
+            counterAccountId: 2
+            baseAmount: 500000
+
+  - name: Exchange USD -> ARS
+    weight: 2
+    flow:
+      - post:
+          url: '/exchange'
+          headers:
+            Content-Type: 'application/json'
+          json:
+            baseCurrency: 'USD'
+            counterCurrency: 'ARS'
+            baseAccountId: 2
+            counterAccountId: 1
+            baseAmount: 100
+
+  - name: Exchange EUR -> ARS
+    weight: 2
+    flow:
+      - post:
+          url: '/exchange'
+          headers:
+            Content-Type: 'application/json'
+          json:
+            baseCurrency: 'EUR'
+            counterCurrency: 'ARS'
+            baseAccountId: 3
+            counterAccountId: 1
+            baseAmount: 50
+
+  - name: Exchange BRL -> ARS
+    weight: 2
+    flow:
+      - post:
+          url: '/exchange'
+          headers:
+            Content-Type: 'application/json'
+          json:
+            baseCurrency: 'BRL'
+            counterCurrency: 'ARS'
+            baseAccountId: 4
+            counterAccountId: 1
+            baseAmount: 200
