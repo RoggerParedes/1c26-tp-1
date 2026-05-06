@@ -1,0 +1,43 @@
+# Carga sobre POST /exchange (cada request espera ~400–800 ms en transfers simulados).
+# Objetivo: saturar el sistema más que rates.yaml y ver colas / mayor latencia con 1 réplica
+# vs menor cola o mejor cola con varias réplicas (nginx reparte entre servicios api).
+#
+# Uso: ./run-scenario.sh exchange-load api
+
+config:
+  environments:
+    api:
+      target: "http://localhost:5555"
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  # Muchas conexiones concurrentes hacia nginx (cada VU puede tener requests en vuelo).
+  pool: 100
+
+  phases:
+    - name: Warm-up
+      duration: 30
+      arrivalRate: 2
+      rampTo: 10
+    - name: Saturation ramp
+      duration: 120
+      arrivalRate: 10
+      rampTo: 80
+    - name: Sustained peak
+      duration: 90
+      arrivalRate: 80
+
+scenarios:
+  - name: Exchange (USD→ARS)
+    flow:
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "USD"
+            counterCurrency: "ARS"
+            baseAmount: 1
+            baseAccountId: 11
+            counterAccountId: 10
