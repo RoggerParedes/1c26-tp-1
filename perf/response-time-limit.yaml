@@ -1,0 +1,53 @@
+config:
+  target: "http://localhost:5555"
+
+  environments:
+    api:
+      target: "http://localhost:5555"
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  pool: 50
+
+  phases:
+    - name: Warm up
+      duration: 20
+      arrivalRate: 1
+
+    - name: Normal load - 15 rps
+      duration: 30
+      arrivalRate: 15
+
+    - name: Medium load - 30 rps
+      duration: 30
+      arrivalRate: 30
+
+    - name: Higher load - 50 rps
+      duration: 30
+      arrivalRate: 50
+
+    - name: Higher load - 100 rps
+      duration: 30
+      arrivalRate: 100
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+  processor: "./processor.js"
+
+scenarios:
+  - name: Exchange small request
+    flow:
+      - function: "smallRequest"
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "{{ baseCurrency }}"
+            counterCurrency: "{{ counterCurrency }}"
+            baseAccountId: "{{ baseAccountId }}"
+            counterAccountId: "{{ counterAccountId }}"
+            baseAmount: "{{ baseAmount }}"

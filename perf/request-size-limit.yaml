@@ -1,0 +1,54 @@
+config:
+  environments:
+    api:
+      target: "http://localhost:5555"
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-api"
+
+  processor: "./processor.js"
+
+  phases:
+    - name: Warm up
+      duration: 60
+      arrivalRate: 1
+
+    - name: Small requests ramp
+      duration: 120
+      arrivalRate: 2
+      rampTo: 5
+
+    - name: Mixed load
+      duration: 180
+      arrivalRate: 5
+
+scenarios:
+  - name: Exchange small request
+    weight: 3 # ⬅ predominan requests chicas
+    flow:
+      - function: "smallRequest"
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "{{ baseCurrency }}"
+            counterCurrency: "{{ counterCurrency }}"
+            baseAccountId: "{{ baseAccountId }}"
+            counterAccountId: "{{ counterAccountId }}"
+            baseAmount: "{{ baseAmount }}"
+            extraPayload: "{{ extraPayload }}"
+
+  - name: Exchange large request
+    weight: 1 # ⬅ menos frecuencia
+    flow:
+      - function: "largeRequest"
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "{{ baseCurrency }}"
+            counterCurrency: "{{ counterCurrency }}"
+            baseAccountId: "{{ baseAccountId }}"
+            counterAccountId: "{{ counterAccountId }}"
+            baseAmount: "{{ baseAmount }}"
+            extra: "{{ extraPayload }}"
