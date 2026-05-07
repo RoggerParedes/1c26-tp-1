@@ -1,0 +1,382 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 1,
+  "id": null,
+  "iteration": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Graphite",
+      "description": "SLO-1: percentil 95 de duracion de escenario (latencia lado cliente Artillery) debe ser menor a 900 ms.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 900 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.10",
+      "targets": [
+        {
+          "refId": "A",
+          "target": "stats.gauges.$server.scenarioDuration.p95",
+          "textEditor": false
+        }
+      ],
+      "title": "SLO-1: p95 latencia (objetivo < 900 ms)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Graphite",
+      "description": "SLO-2: fallos sobre intentos totales. Numerador: HTTP no-200 (sum(codes.*) - codes.200) + errores de conexion Artillery (errors.*). Denominador: sum(codes.*) + sum(errors.*). Escala 0-100.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.10",
+      "targets": [
+        {
+          "refId": "A",
+          "target": "alias(scale(divideSeries(sumSeries(transformNull(diffSeries(sumSeries(stats.gauges.$server.codes.*), transformNull(stats.gauges.$server.codes.200, 0)), 0), transformNull(sumSeries(stats.gauges.$server.errors.*), 0)), transformNull(sumSeries(stats.gauges.$server.codes.*, stats.gauges.$server.errors.*), 1)), 100), 'Error rate %')",
+          "textEditor": true
+        }
+      ],
+      "title": "SLO-2: error rate % valor 0-100 (objetivo < 1)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Graphite",
+      "description": "SLO-3: porcentaje de intentos exitosos (HTTP 200 / total intentos). Total = sum(codes.*) + sum(errors.*). Objetivo >= 99% (equivalente a error rate < 1%).",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 99 }
+            ]
+          },
+          "unit": "short",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.10",
+      "targets": [
+        {
+          "refId": "A",
+          "target": "alias(scale(divideSeries(transformNull(stats.gauges.$server.codes.200, 0), transformNull(sumSeries(stats.gauges.$server.codes.*, stats.gauges.$server.errors.*), 1)), 100), 'Exito %')",
+          "textEditor": true
+        }
+      ],
+      "title": "SLO-3: exito % (objetivo >= 99)",
+      "type": "stat"
+    },
+    {
+      "aliasColors": { "p50": "#7EB26D", "p95": "#EAB839", "p99": "#6ED0E0", "max": "#BF1B00" },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Graphite",
+      "description": "Evolucion de latencia. Linea roja: umbral SLO-1 (900 ms). Si no ves p95/p99, ver dashboard-slo.md (fallback a median/max).",
+      "fieldConfig": { "defaults": { "custom": {} }, "overrides": [] },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 4 },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 220,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "options": { "alertThreshold": true },
+      "percentage": false,
+      "pluginVersion": "7.3.10",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        { "refId": "A", "target": "alias(stats.gauges.$server.scenarioDuration.median, 'p50')" },
+        { "refId": "B", "target": "alias(stats.gauges.$server.scenarioDuration.p95, 'p95')" },
+        { "refId": "C", "target": "alias(stats.gauges.$server.scenarioDuration.p99, 'p99')" },
+        { "refId": "D", "target": "alias(stats.gauges.$server.scenarioDuration.max, 'max')" }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "custom",
+          "fill": false,
+          "line": true,
+          "lineColor": "rgba(255, 0, 0, 0.6)",
+          "op": "gt",
+          "value": 900,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Latencia cliente (p50 / p95 / p99 / max) vs umbral 900 ms",
+      "tooltip": { "shared": true, "sort": 0, "value_type": "individual" },
+      "type": "graph",
+      "xaxis": { "buckets": null, "mode": "time", "show": true, "values": [] },
+      "yaxes": [
+        { "format": "ms", "label": "Latencia", "logBase": 1, "max": null, "min": "0", "show": true },
+        { "format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": false }
+      ],
+      "yaxis": { "align": false, "alignLevel": null }
+    },
+    {
+      "aliasColors": { "Error rate %": "#BF1B00" },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Graphite",
+      "description": "Fallos sobre intentos totales (misma formula que Stat SLO-2). Umbral SLO-2: 1%.",
+      "fieldConfig": { "defaults": { "custom": {} }, "overrides": [] },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 11 },
+      "hiddenSeries": false,
+      "id": 5,
+      "legend": { "avg": true, "current": true, "max": true, "show": true, "values": true },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "options": { "alertThreshold": true },
+      "percentage": false,
+      "pluginVersion": "7.3.10",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "alias(scale(divideSeries(sumSeries(transformNull(diffSeries(sumSeries(stats.gauges.$server.codes.*), transformNull(stats.gauges.$server.codes.200, 0)), 0), transformNull(sumSeries(stats.gauges.$server.errors.*), 0)), transformNull(sumSeries(stats.gauges.$server.codes.*, stats.gauges.$server.errors.*), 1)), 100), 'Error rate %')",
+          "textEditor": true
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "custom",
+          "fill": false,
+          "line": true,
+          "lineColor": "rgba(255, 152, 0, 0.8)",
+          "op": "gt",
+          "value": 1,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Error rate % (SLO < 1%)",
+      "tooltip": { "shared": true, "sort": 0, "value_type": "individual" },
+      "type": "graph",
+      "xaxis": { "buckets": null, "mode": "time", "show": true, "values": [] },
+      "yaxes": [
+        { "format": "short", "label": "Error rate (0-100 = %)", "logBase": 1, "max": null, "min": "0", "show": true },
+        { "format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": false }
+      ],
+      "yaxis": { "align": false, "alignLevel": null }
+    },
+    {
+      "aliasColors": { "Exito %": "#7EB26D", "Pending": "#447EBC" },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Graphite",
+      "description": "Exito % = 100 * codes.200 / (sum(codes.*) + sum(errors.*)). Pending en eje derecho. Linea naranja: 99% (SLO-3).",
+      "fieldConfig": { "defaults": { "custom": {} }, "overrides": [] },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 18 },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 200,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "connected",
+      "options": { "alertThreshold": true },
+      "percentage": false,
+      "pluginVersion": "7.3.10",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [
+        { "alias": "Pending", "yaxis": 2 }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "refId": "A",
+          "target": "alias(scale(divideSeries(transformNull(stats.gauges.$server.codes.200, 0), transformNull(sumSeries(stats.gauges.$server.codes.*, stats.gauges.$server.errors.*), 1)), 100), 'Exito %')",
+          "textEditor": true
+        },
+        { "refId": "B", "target": "alias(stats.gauges.$server.pendingRequests, 'Pending')" }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "custom",
+          "fill": false,
+          "line": true,
+          "lineColor": "rgba(255, 152, 0, 0.8)",
+          "op": "gt",
+          "value": 99,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Exito % vs pending (linea 99%; SLO-3)",
+      "tooltip": { "shared": true, "sort": 0, "value_type": "individual" },
+      "type": "graph",
+      "xaxis": { "buckets": null, "mode": "time", "show": true, "values": [] },
+      "yaxes": [
+        { "format": "short", "label": "Exito (0-100)", "logBase": 1, "max": "100", "min": "0", "show": true },
+        { "format": "short", "label": "Pending", "logBase": 1, "max": null, "min": "0", "show": true }
+      ],
+      "yaxis": { "align": false, "alignLevel": null }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": ["slo", "performance", "tp1"],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": { "selected": false, "text": "artillery-api", "value": "artillery-api" },
+        "hide": 0,
+        "includeAll": false,
+        "label": "server",
+        "multi": false,
+        "name": "server",
+        "options": [
+          { "selected": true, "text": "artillery-api", "value": "artillery-api" }
+        ],
+        "query": "artillery-api",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h"]
+  },
+  "timezone": "",
+  "title": "SLO dashboard (latencia / errores / capacidad)",
+  "uid": "sloTp1Exchange",
+  "version": 4
+}
