@@ -1,0 +1,54 @@
+config:
+  target: "http://localhost:5555"
+
+  environments:
+    api:
+      target: "http://localhost:5555"
+      plugins:
+        statsd:
+          host: localhost
+          port: 8125
+          prefix: "artillery-rate-limit"
+
+  processor: "./processor.js"
+
+  defaults:
+    headers:
+      "Content-Type": "application/json"
+
+  http:
+    timeout: 2000
+
+  phases:
+    - name: Warm up
+      duration: 20
+      arrivalRate: 1
+
+    - name: Below limit
+      duration: 30
+      arrivalRate: 5
+
+    - name: Around limit
+      duration: 30
+      arrivalRate: 10
+
+    - name: Over limit
+      duration: 40
+      arrivalRate: 25
+
+    - name: Stress over limit
+      duration: 40
+      arrivalRate: 40
+
+scenarios:
+  - name: Exchange with rate limit
+    flow:
+      - function: "smallRequest"
+      - post:
+          url: "/exchange"
+          json:
+            baseCurrency: "{{ baseCurrency }}"
+            counterCurrency: "{{ counterCurrency }}"
+            baseAccountId: "{{ baseAccountId }}"
+            counterAccountId: "{{ counterAccountId }}"
+            baseAmount: "{{ baseAmount }}"

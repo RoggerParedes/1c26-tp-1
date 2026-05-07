@@ -1,53 +1,32 @@
 import { nanoid } from "nanoid";
 
-import { init as stateInit, getAccounts as stateAccounts, getRates as stateRates, getLog as stateLog } from "./state.js";
+import * as repo from "./repositories/stateRepository.js";
+import { recordSuccessfulExchangeMetrics } from "./metrics/businessMetrics.js";
 
-let accounts;
-let rates;
-let log;
-
-//call to initialize the exchange service
 export async function init() {
-  await stateInit();
-
-  accounts = stateAccounts();
-  rates = stateRates();
-  log = stateLog();
+  await repo.init();
 }
 
-//returns all internal accounts
-export function getAccounts() {
-  return accounts;
+export async function getAccounts() {
+  return await repo.getAccounts();
 }
 
-//sets balance for an account
-export function setAccountBalance(accountId, balance) {
-  const account = findAccountById(accountId);
-
-  if (account != null) {
-    account.balance = balance;
-  }
+export async function setAccountBalance(accountId, balance) {
+  await repo.setAccountBalance(accountId, balance);
 }
 
-//returns all current exchange rates
-export function getRates() {
-  return rates;
+export async function getRates() {
+  return await repo.getRates();
 }
 
-//returns the whole transaction log
-export function getLog() {
-  return log;
+export async function getLog() {
+  return await repo.getLog();
 }
 
-//sets the exchange rate for a given pair of currencies, and the reciprocal rate as well
-export function setRate(rateRequest) {
-  const { baseCurrency, counterCurrency, rate } = rateRequest;
-
-  rates[baseCurrency][counterCurrency] = rate;
-  rates[counterCurrency][baseCurrency] = Number((1 / rate).toFixed(5));
+export async function setRate(rateRequest) {
+  await repo.setRate(rateRequest);
 }
 
-//executes an exchange operation
 export async function exchange(exchangeRequest) {
   const {
     baseCurrency,
@@ -57,16 +36,11 @@ export async function exchange(exchangeRequest) {
     baseAmount,
   } = exchangeRequest;
 
-  //get the exchange rate
-  const exchangeRate = rates[baseCurrency][counterCurrency];
-  //compute the requested (counter) amount
+  const exchangeRate = await repo.getRate(baseCurrency, counterCurrency);
   const counterAmount = baseAmount * exchangeRate;
-  //find our account on the provided (base) currency
-  const baseAccount = findAccountByCurrency(baseCurrency);
-  //find our account on the counter currency
-  const counterAccount = findAccountByCurrency(counterCurrency);
+  const baseAccount = await repo.getAccountByCurrency(baseCurrency);
+  const counterAccount = await repo.getAccountByCurrency(counterCurrency);
 
-  //construct the result object with defaults
   const exchangeResult = {
     id: nanoid(),
     ts: new Date(),
@@ -77,64 +51,41 @@ export async function exchange(exchangeRequest) {
     obs: null,
   };
 
-  //check if we have funds on the counter currency account
   if (counterAccount.balance >= counterAmount) {
-    //try to transfer from clients' base account
     if (await transfer(clientBaseAccountId, baseAccount.id, baseAmount)) {
-      //try to transfer to clients' counter account
       if (
         await transfer(counterAccount.id, clientCounterAccountId, counterAmount)
       ) {
-        //all good, update balances
-        baseAccount.balance += baseAmount;
-        counterAccount.balance -= counterAmount;
+        await repo.updateAccountBalanceDelta(baseAccount.id, baseAmount);
+        await repo.updateAccountBalanceDelta(counterAccount.id, -counterAmount);
         exchangeResult.ok = true;
         exchangeResult.counterAmount = counterAmount;
+        recordSuccessfulExchangeMetrics({
+          baseCurrency,
+          counterCurrency,
+          baseAmount,
+          counterAmount,
+        });
       } else {
-        //could not transfer to clients' counter account, return base amount to client
         await transfer(baseAccount.id, clientBaseAccountId, baseAmount);
         exchangeResult.obs = "Could not transfer to clients' account";
       }
     } else {
-      //could not withdraw from clients' account
       exchangeResult.obs = "Could not withdraw from clients' account";
     }
   } else {
-    //not enough funds on internal counter account
     exchangeResult.obs = "Not enough funds on counter currency account";
   }
 
-  //log the transaction and return it
-  log.push(exchangeResult);
+  await repo.appendLog(exchangeResult);
 
   return exchangeResult;
 }
 
-// internal - call transfer service to execute transfer between accounts
 async function transfer(fromAccountId, toAccountId, amount) {
   const min = 200;
   const max = 400;
   return new Promise((resolve) =>
     setTimeout(() => resolve(true), Math.random() * (max - min + 1) + min)
   );
-}
-
-function findAccountByCurrency(currency) {
-  for (let account of accounts) {
-    if (account.currency == currency) {
-      return account;
-    }
-  }
-
-  return null;
-}
-
-function findAccountById(id) {
-  for (let account of accounts) {
-    if (account.id == id) {
-      return account;
-    }
-  }
-
-  return null;
 }
