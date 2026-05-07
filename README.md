@@ -61,7 +61,7 @@ El fundador de arVault tiene un par de pedidos adicionales al análisis:
 
 Para generar carga y ver las mediciones obtenidas, en el directorio `perf/` tienen un dashboard de Grafana ya armado (`dashboard.json`) al que **deberán ajustar según las características de su equipo de pruebas (RAM, cores)**, y al que pueden modificar agregando métricas o alterando las visualizaciones. Además, tienen un ejemplo de un escenario básico de Artillery (**deben** crear sus propios escenarios de manera apropiada para lo que estén probando). También hay un script y una configuración en el `package.json` para que puedan ejecutar los escenarios corriendo:
 
-```./run-scenario.sh <filename> <env>```
+`./run-scenario.sh <filename> <env>`
 
 donde `<filename>` es el nombre del archivo con el escenario (sin la extensión `.yaml`) y `<env>` es el entorno en el cual correrá la prueba (vean la sección `environments` dentro del yaml del escenario).
 
@@ -83,7 +83,14 @@ Hay muchos tipos de escenarios de carga y pruebas de performance en general. Pue
 2. Asumimos que todo el grupo participa en la resolución del trabajo. De ocurrir problemas o surgir contratiempos, es el grupo quien debe responder y solucionarlos. Pueden consultar a los docentes pero deben demostrar primero que intentaron solucionarlos internamente.
 3. De haber defectos importantes en el desarrollo o en el informe del TP, se solicitará una re-entrega. Esto tiene un impacto considerable en la nota final, por lo que les recomendamos que controlen entre todo el grupo el cumplimiento del enunciado, las conclusiones y las justificaciones antes de entregar el trabajo. Una vez más, no se considera a un TP hecho parcialmente como un caso de re-entrega. Tampoco se acepta entregar secciones sin desarrollar o con contenido que, a juicio de la cátedra, no represente un desarrollo genuino de parte del grupo.
 
------------
+## Ejecución de escenarios de prueba y escalabilidad
+
+Para la ejecución de los distintos escenarios de prueba sobre el servicio de cambio de monedas de arVault, se utilizó la infraestructura provista en docker-compose.yml, lo que permitió reproducir el entorno del sistema de manera consistente y controlada.
+En este contexto, los servicios fueron levantados utilizando comandos del tipo:
+
+docker compose up -d --scale <servicio>=<cantidad>
+
+Este comando permite iniciar todos los componentes del sistema (API, Nginx, herramientas de monitoreo, etc.) en segundo plano (-d), y ajustar dinámicamente la cantidad de instancias de un servicio mediante el parámetro --scale.
 
 ## Links útiles
 
